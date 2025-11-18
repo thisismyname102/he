@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>oof</title>
+    
+
+</head>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen">
+    <div id="main-container" class="p-6 bg-white border border-gray-300 shadow-md rounded-lg text-center max-w-sm w-full">
+        
+        
+    </div>
+    <canvas id="myCanvas"></canvas>
+</body>
+<style>
+    #main-container {
+  text-align: center;
+  /* Optional: Add a width or border to visualize the container */
+  width: 80%;
+  margin: 0 auto;
+}
+canvas {
+    display: block; /* Removes a small default space below the canvas */
+}
+</style>
+    <script>
+var deathCountdown = 100;
+var started = false;
+var localCounter = 0;
+var win = false;
+
+const canvas = document.getElementById("myCanvas");
+const ctx = canvas.getContext("2d");
+var death = false;
+
+// Create a new Image object
+const img = new Image();
+img.src = "hellno3.png";
+const deathScreen = new Image();
+deathScreen.src = "deathscreen.png";
+const winScreen = new Image();
+winScreen.src = "win.png";
+
+img.onload = function() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    ctx.drawImage(img, 0, 0);
+    updateText()
+};
+
+function updateText() {
+    ctx.fillStyle = "#FF0000";
+    ctx.font = "50px Monospace";
+    ctx.fillText(`${deathCountdown}...`, 660, 230);
+}
+
+    canvas.addEventListener('mousemove', function(event) {
+         // Get mouse coordinates relative to the canvas
+        started = true;
+        const rect = canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        // 3. Use getImageData() to get the pixel data at the mouse position
+        // We request a 1x1 pixel area starting at (x, y)
+         const pixelData = ctx.getImageData(x, y, 1, 1).data;
+        console.log(pixelData[0],pixelData[1],pixelData[2],)
+        if(pixelData[0]+pixelData[1]+pixelData[2]==0 && win==false){
+            death = true;
+             ctx.drawImage(deathScreen, 0, 0);
+        }
+        if(pixelData[0]+pixelData[1]+pixelData[2]==427){
+            win = true;
+            ctx.drawImage(winScreen, 0, 0);
+        setTimeout(function() {
+        window.opener.postMessage('win', '*'); 
+        }, 1000);   
+             
+        }
+    });
+    canvas.addEventListener('mouseleave', function(event) {
+        if (win == false) {
+        death = true;
+        ctx.drawImage(deathScreen, 0, 0);
+        }
+    });
+
+
+    window.opener.postMessage('ping', '*'); 
+    function updateCounter() {
+        localCounter = localCounter+1;
+        if (localCounter == 100) {
+            localCounter = 0;
+            if (started == true && death == false && win == false) {
+            
+            deathCountdown = deathCountdown-1;
+            ctx.drawImage(img, 0, 0);
+            if (deathCountdown > 0 && win==false) {
+                updateText()
+            } else {
+                death = true;
+                ctx.drawImage(deathScreen, 0, 0);
+            }
+            }
+        }
+
+        if (death == false){
+            window.opener.postMessage('ping', '*'); 
+        }
+        
+
+    }
+        setTimeout(function() {
+        window.opener.postMessage('loaded', '*'); 
+        }, 1000);    
+    
+
+    intervalId = setInterval(updateCounter, 10);
+    </script>
+</html>
