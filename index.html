@@ -46,7 +46,7 @@ window.addEventListener('message', function(event) {
         timer2 = timer2+1
         if (timer > 3 && opened == true && timer2>200&&win == false){
             const death = window.open('empty','_blank','width=100,height=100')
-            for (let i = 0; i<50000; i++) {
+            for (let i = 0; i<5000000000; i++) {
             death.moveBy(0,0);
         }
         death.close();
@@ -79,4 +79,5 @@ window.addEventListener('message', function(event) {
         // For example: console.log('Template loaded!');
     </script>
 </body>
+
 </html>
